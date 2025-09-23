@@ -1,0 +1,6 @@
+{
+  "modem_id": "0",
+  "bark_key": "your_bark_key_here",
+  "enable_bark": true,
+  "sleep_duration": 3
+}
