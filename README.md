@@ -57,7 +57,7 @@ mmcli --list-modems
 #### 1. 克隆项目
 
 ```bash
-git clone https://github.com/ersut2u/sim-sms-forward-mmcli.git
+git clone https://github.com/ersutUp/sim-sms-forward-mmcli.git
 cd sim-sms-forward-mmcli
 ```
 
