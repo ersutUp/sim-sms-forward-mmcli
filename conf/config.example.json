@@ -1,6 +1,10 @@
 {
   "modem_id": "0",
   "bark_key": "your_bark_key_here",
+  "bark_api_url": "https://api.day.app",
   "enable_bark": true,
+  "hismsg_key": "",
+  "hismsg_api_url": "https://hismsg.com/api/send",
+  "enable_hismsg": false,
   "sleep_duration": 3
 }

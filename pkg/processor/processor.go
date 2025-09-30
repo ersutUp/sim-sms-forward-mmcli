@@ -13,9 +13,10 @@ import (
 // SMSProcessor 短信处理器
 // 封装了调制解调器管理器和通知客户端，提供短信处理的核心功能
 type SMSProcessor struct {
-	Config       *config.Config           // 配置对象
-	ModemManager *modem.Manager           // 调制解调器管理器
-	BarkClient   *notification.BarkClient // Bark 通知客户端
+	Config       *config.Config             // 配置对象
+	ModemManager *modem.Manager             // 调制解调器管理器
+	BarkClient   *notification.BarkClient   // Bark 通知客户端
+	HismsgClient *notification.HismsgClient // hismsg 通知客户端
 }
 
 // NewSMSProcessorWithConfig 创建并返回一个使用配置对象的新短信处理器实例
@@ -27,7 +28,8 @@ func NewSMSProcessorWithConfig(cfg *config.Config) *SMSProcessor {
 	return &SMSProcessor{
 		Config:       cfg,
 		ModemManager: modem.NewManager(cfg.ModemID),
-		BarkClient:   notification.NewBarkClient(cfg.BarkKey),
+		BarkClient:   notification.NewBarkClient(cfg.BarkKey, cfg.BarkAPIURL),
+		HismsgClient: notification.NewHismsgClient(cfg.HismsgKey, cfg.HismsgAPIURL),
 	}
 }
 
@@ -41,7 +43,11 @@ func NewSMSProcessor(modemID, barkKey string) *SMSProcessor {
 	cfg := &config.Config{
 		ModemID:       modemID,
 		BarkKey:       barkKey,
+		BarkAPIURL:    "https://api.day.app",
 		EnableBark:    true,
+		HismsgKey:     "",
+		HismsgAPIURL:  "https://hismsg.com/api/send",
+		EnableHismsg:  false,
 		SleepDuration: 3,
 	}
 	return NewSMSProcessorWithConfig(cfg)
@@ -76,6 +82,16 @@ func (sp *SMSProcessor) processSMS(smsID string) error {
 		logger.Info("Bark 通知发送成功")
 	} else {
 		//logger.Info("Bark 通知已禁用，跳过发送")
+	}
+
+	// 通过 Hismsg 服务发送推送通知（根据配置开关决定是否发送）
+	if sp.Config.EnableHismsg {
+		if err := sp.HismsgClient.SendSMS(sms); err != nil {
+			return fmt.Errorf("Hismsg通知异常: %v", err)
+		}
+		logger.Info("Hismsg 通知发送成功")
+	} else {
+		//logger.Info("Hismsg 通知已禁用，跳过发送")
 	}
 
 	// 从调制解调器中删除已处理的短信

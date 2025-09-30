@@ -14,14 +14,18 @@ import (
 // BarkClient Bark 通知客户端
 type BarkClient struct {
 	APIKey string // Bark 服务的 API 密钥，用于身份验证
+	APIURL string // Bark API 服务器地址
 }
 
 // NewBarkClient 创建一个新的 Bark 通知客户端
-// 参数: apiKey - Bark API 的密钥字符串
+// 参数: 
+//   - apiKey: Bark API 的密钥字符串
+//   - apiURL: Bark API 服务器地址
 // 返回: 初始化好的 BarkClient 指针
-func NewBarkClient(apiKey string) *BarkClient {
+func NewBarkClient(apiKey, apiURL string) *BarkClient {
 	return &BarkClient{
 		APIKey: apiKey,
+		APIURL: apiURL,
 	}
 }
 
@@ -49,7 +53,7 @@ func (bc *BarkClient) SendSMS(sms *types.SMS) error {
 	}
 
 	// 发送 HTTP POST 请求到 Bark API
-	url := fmt.Sprintf("https://api.day.app/%s", bc.APIKey)
+	url := fmt.Sprintf("%s/%s", bc.APIURL, bc.APIKey)
 	logger.Infof("发送 Bark 请求到: %s", url)
 
 	resp, err := http.Post(url, "application/json; charset=utf-8", bytes.NewBuffer(jsonData))

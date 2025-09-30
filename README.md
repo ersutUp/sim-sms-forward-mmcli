@@ -17,6 +17,11 @@
 - 🔄 **自动重启**: 内置看门狗脚本，确保服务稳定运行
 - 📊 **完整日志**: 自动生成详细日志，便于问题诊断
 
+**支持的平台**
+
+- Bark
+- [hismsg](https://github.com/ersutUp/hismsg/)
+
 **未来计划**: 支持更多消息推送平台
 
 ## 项目的起源
@@ -101,10 +106,14 @@ nano config.json  # 使用您喜欢的编辑器
 
 ```json
 {
-  "modem_id": "0",                    // 调制解调器ID，通过 mmcli --list-modems 查看
-  "bark_key": "your_bark_key_here",   // Bark服务密钥
-  "enable_bark": true,                // 是否启用Bark通知
-  "sleep_duration": 3,                // 检查短信的间隔时间（秒）
+  "modem_id": "0",                           // 调制解调器ID，通过 mmcli --list-modems 查看
+  "bark_key": "your_bark_key_here",          // Bark服务密钥
+  "bark_api_url": "https://api.day.app",     // Bark API服务器地址
+  "enable_bark": true,                       // 是否启用Bark通知
+  "hismsg_key": "",                          // Hismsg服务密钥（可选）
+  "hismsg_api_url": "https://hismsg.com/api/send", // Hismsg API服务器地址
+  "enable_hismsg": false,                    // 是否启用Hismsg通知
+  "sleep_duration": 3                        // 检查短信的间隔时间（秒）
 }
 ```
 
@@ -220,23 +229,110 @@ crontab -e
 | 配置项 | 类型 | 说明 | 默认值 | 必填 |
 |--------|------|------|--------|------|
 | `modem_id` | 字符串 | 调制解调器的ID，通过 `mmcli --list-modems` 获取 | `"0"` | ✅ |
-| `bark_key` | 字符串 | Bark 服务的 API 密钥，用于推送通知 | 无 | ✅ |
+| `bark_key` | 字符串 | Bark 服务的 API 密钥，用于推送通知 | 无 | 当启用Bark时 |
+| `bark_api_url` | 字符串 | Bark API 服务器地址，支持自定义服务器 | `"https://api.day.app"` | ❌ |
 | `enable_bark` | 布尔值 | 是否启用 Bark 推送通知功能 | `true` | ❌ |
+| `hismsg_key` | 字符串 | Hismsg 服务的 API 密钥，用于推送通知 | `""` | 当启用Hismsg时 |
+| `hismsg_api_url` | 字符串 | Hismsg API 服务器地址，支持自定义服务器 | `"https://hismsg.com/api/send"` | ❌ |
+| `enable_hismsg` | 布尔值 | 是否启用 Hismsg 推送通知功能 | `false` | ❌ |
 | `sleep_duration` | 整数 | 两次检查短信之间的间隔时间（秒） | `3` | ❌ |
 
-### 获取 Bark 密钥
+### 通知服务配置
 
+#### Bark 通知服务
+
+Bark 是一个简洁的 iOS 推送通知服务。
+
+**获取 Bark 密钥**：
 1. 在 iOS 设备上安装 [Bark 应用](https://apps.apple.com/app/bark-customed-notifications/id1403753865)
 2. 打开应用，复制显示的密钥
 3. 将密钥填入配置文件的 `bark_key` 字段
 
+**自定义 Bark 服务器**：
+如果您使用自部署的 Bark 服务器，可以修改 `bark_api_url` 字段：
+```json
+{
+  "bark_api_url": "https://your-bark-server.com"
+}
+```
+
+#### Hismsg 通知服务
+
+Hismsg 是一个开源的消息推送服务，项目地址：[hismsg](https://github.com/ersutUp/hismsg/)
+
+**配置 Hismsg**：
+1. 部署或使用现有的 Hismsg 服务
+2. 获取 API 密钥
+3. 在配置文件中启用并配置：
+```json
+{
+  "enable_hismsg": true,
+  "hismsg_key": "your_hismsg_key",
+  "hismsg_api_url": "http://your-hismsg-server:port"
+}
+```
+
+**同时启用多个通知服务**：
+系统支持同时启用 Bark 和 Hismsg，短信将同时推送到两个服务：
+```json
+{
+  "enable_bark": true,
+  "bark_key": "your_bark_key",
+  "enable_hismsg": true,
+  "hismsg_key": "your_hismsg_key"
+}
+```
+
 ### 配置示例
 
+#### 基础配置（仅使用 Bark）
 ```json
 {
   "modem_id": "0",
   "bark_key": "aBcDeFgHiJkLmN",
+  "bark_api_url": "https://api.day.app",
   "enable_bark": true,
+  "enable_hismsg": false,
+  "sleep_duration": 3
+}
+```
+
+#### 仅使用 Hismsg
+```json
+{
+  "modem_id": "0",
+  "enable_bark": false,
+  "enable_hismsg": true,
+  "hismsg_key": "your_hismsg_key",
+  "hismsg_api_url": "http://10.52.25.32:5190",
+  "sleep_duration": 3
+}
+```
+
+#### 同时使用两种通知服务
+```json
+{
+  "modem_id": "0",
+  "enable_bark": true,
+  "bark_key": "aBcDeFgHiJkLmN",
+  "bark_api_url": "https://api.day.app",
+  "enable_hismsg": true,
+  "hismsg_key": "your_hismsg_key",
+  "hismsg_api_url": "http://10.52.25.32:5190",
+  "sleep_duration": 5
+}
+```
+
+#### 自定义服务器配置
+```json
+{
+  "modem_id": "0",
+  "enable_bark": true,
+  "bark_key": "aBcDeFgHiJkLmN",
+  "bark_api_url": "https://your-custom-bark-server.com",
+  "enable_hismsg": true,
+  "hismsg_key": "your_hismsg_key",
+  "hismsg_api_url": "https://your-hismsg-server.com/api/send",
   "sleep_duration": 3
 }
 ```
@@ -321,15 +417,18 @@ mmcli --modem=0 --enable
 sudo systemctl restart ModemManager
 ```
 
-#### 2. Bark 通知问题
+#### 2. 通知服务问题
 
-**问题**: Bark 通知发送失败
+**Bark 通知服务问题**:
+
+*问题*: Bark 通知发送失败
 - ✅ 检查 `bark_key` 是否正确
+- ✅ 检查 `bark_api_url` 配置是否正确
 - ✅ 确保网络连接正常  
-- ✅ 检查 Bark 服务器状态（访问 https://api.day.app）
+- ✅ 检查 Bark 服务器状态（访问对应的 API 地址）
 - ✅ 验证 iOS 设备上的 Bark 应用是否正常
 
-**问题**: 收不到推送通知
+*问题*: 收不到 Bark 推送通知
 
 ```bash
 # 测试 Bark API 连接
@@ -337,6 +436,28 @@ curl -X POST "https://api.day.app/your_bark_key" \
      -H "Content-Type: application/json" \
      -d '{"title":"测试","body":"这是一条测试消息"}'
 ```
+
+**Hismsg 通知服务问题**:
+
+*问题*: Hismsg 通知发送失败
+- ✅ 检查 `hismsg_key` 是否正确
+- ✅ 检查 `hismsg_api_url` 配置是否正确
+- ✅ 确保 Hismsg 服务器正常运行
+- ✅ 验证网络连接到 Hismsg 服务器
+
+*问题*: 测试 Hismsg API 连接
+
+```bash
+# 测试 Hismsg API 连接
+curl -X POST "http://your-hismsg-server:port/api/message/push/your_key" \
+     -H "Content-Type: application/json" \
+     -d '{"title":"测试","content":"这是一条测试消息"}'
+```
+
+**通用通知问题**:
+- ✅ 检查日志文件中的错误信息
+- ✅ 确认对应的通知服务已启用（`enable_bark` 或 `enable_hismsg` 为 `true`）
+- ✅ 验证配置文件 JSON 格式是否正确
 
 #### 3. 程序运行问题
 
@@ -351,11 +472,10 @@ cat config.json
 
 ### 调试技巧
 
-#### 启用详细日志
+#### 调整检查频率进行测试
 ```json
 {
-  "log_level": "DEBUG",
-  "sleep_duration": 1
+  "sleep_duration": 1  // 设置为1秒进行快速测试
 }
 ```
 

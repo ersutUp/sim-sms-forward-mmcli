@@ -16,8 +16,20 @@ type Config struct {
 	// BarkKey Bark API密钥
 	BarkKey string `json:"bark_key"`
 	
+	// BarkAPIURL Bark API服务器地址
+	BarkAPIURL string `json:"bark_api_url"`
+	
 	// EnableBark 是否启用Bark通知
 	EnableBark bool `json:"enable_bark"`
+	
+	// HismsgKey hismsg 密钥
+	HismsgKey string `json:"hismsg_key"`
+	
+	// HismsgAPIURL Hismsg API服务器地址
+	HismsgAPIURL string `json:"hismsg_api_url"`
+	
+	// EnableHismsg 是否启用hismsg通知
+	EnableHismsg bool `json:"enable_hismsg"`
 	
 	// SleepDuration 检查间隔时间（秒）
 	SleepDuration int `json:"sleep_duration"`
@@ -28,7 +40,11 @@ func DefaultConfig() *Config {
 	return &Config{
 		ModemID:       "0",
 		BarkKey:       "",
+		BarkAPIURL:    "https://api.day.app",
 		EnableBark:    true,
+		HismsgKey:     "",
+		HismsgAPIURL:  "https://hismsg.com/api/send",
+		EnableHismsg:  false,
 		SleepDuration: 3,
 	}
 }
@@ -83,9 +99,24 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("调制解调器ID不能为空")
 	}
 
-	// 如果启用Bark，验证BarkKey不为空
-	if c.EnableBark && c.BarkKey == "" {
-		return fmt.Errorf("启用Bark通知时，Bark密钥不能为空")
+	// 如果启用Bark，验证BarkKey和BarkAPIURL不为空
+	if c.EnableBark {
+		if c.BarkKey == "" {
+			return fmt.Errorf("启用Bark通知时，Bark密钥不能为空")
+		}
+		if c.BarkAPIURL == "" {
+			return fmt.Errorf("启用Bark通知时，Bark API URL不能为空")
+		}
+	}
+
+	// 如果启用Hismsg，验证HismsgKey和HismsgAPIURL不为空
+	if c.EnableHismsg {
+		if c.HismsgKey == "" {
+			return fmt.Errorf("启用Hismsg通知时，Hismsg密钥不能为空")
+		}
+		if c.HismsgAPIURL == "" {
+			return fmt.Errorf("启用Hismsg通知时，Hismsg API URL不能为空")
+		}
 	}
 
 	// 验证休眠时间大于0
@@ -110,4 +141,15 @@ func (c *Config) MaskBarkKey() string {
 		return "****"
 	}
 	return c.BarkKey[:4] + "****" + c.BarkKey[len(c.BarkKey)-4:]
+}
+
+// MaskHismsgKey 对Hismsg密钥进行脱敏处理
+func (c *Config) MaskHismsgKey() string {
+	if c.HismsgKey == "" {
+		return ""
+	}
+	if len(c.HismsgKey) <= 8 {
+		return "****"
+	}
+	return c.HismsgKey[:4] + "****" + c.HismsgKey[len(c.HismsgKey)-4:]
 }

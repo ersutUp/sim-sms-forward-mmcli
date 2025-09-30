@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
-	"time"
-
 	"sim-sms-forward/pkg/config"
 	"sim-sms-forward/pkg/logger"
 	"sim-sms-forward/pkg/processor"
+	"strconv"
+	"time"
 )
 
 // main 函数是程序的入口点
@@ -48,7 +47,11 @@ func main() {
 		cfg = &config.Config{
 			ModemID:       modemID,
 			BarkKey:       barkKey,
+			BarkAPIURL:    "https://api.day.app",
 			EnableBark:    true,
+			HismsgKey:     "",
+			HismsgAPIURL:  "https://hismsg.com/api/send",
+			EnableHismsg:  false,
 			SleepDuration: 3,
 		}
 	default:
@@ -81,6 +84,8 @@ func main() {
 	logger.Infof("调制解调器ID: %s", cfg.ModemID)
 	logger.Infof("Bark密钥: %s", cfg.MaskBarkKey())
 	logger.Infof("Bark开关: %v", cfg.EnableBark)
+	logger.Infof("Hismsg密钥: %s", cfg.MaskHismsgKey())
+	logger.Infof("Hismsg开关: %v", cfg.EnableHismsg)
 	logger.Infof("休眠时间: %d秒", cfg.SleepDuration)
 	logger.Infof("日志目录: %s", logDir)
 	logger.Info("========================================")

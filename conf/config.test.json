@@ -1,6 +1,13 @@
 {
   "modem_id": "0",
+  "sleep_duration": 5,
+
   "enable_bark": false,
-  "bark_key": "test_bark_key",
-  "sleep_duration": 5
+  "bark_key": "xxxxxxx",
+  "bark_api_url": "https://api.day.app",
+
+  "enable_hismsg": true,
+  "hismsg_key": "xxxxxx",
+  "hismsg_api_url": "http://10.52.2xx:5190"
+
 }

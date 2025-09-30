@@ -23,3 +23,16 @@ type BarkResponse struct {
 	Code int    `json:"code"` // 响应状态码，200表示成功
 	Data string `json:"data"` // 响应的附加数据
 }
+
+// HismsgRequest 表示发送到 hismsg API 的请求数据结构
+type HismsgRequest struct {
+	Content  string `json:"content"`            // 通知的主体内容
+	Title    string `json:"title"`              // 通知的标题
+	Subtitle string `json:"subtitle,omitempty"` // 可选的副标题
+}
+
+// HismsgResponse 表示 hismsg API 返回的响应数据结构
+type HismsgResponse struct {
+	Code int         `json:"code"` // 响应状态码，200表示成功
+	Data interface{} `json:"data"` // 响应的附加数据
+}
