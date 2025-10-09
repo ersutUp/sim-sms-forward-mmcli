@@ -8,6 +8,8 @@
 
   "enable_hismsg": true,
   "hismsg_key": "xxxxxx",
-  "hismsg_api_url": "http://10.52.2xx:5190"
+  "hismsg_api_url": "http://10.52.2xx:5190",
+
+  "device_id": "test-device"
 
 }

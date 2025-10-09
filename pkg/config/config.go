@@ -31,6 +31,9 @@ type Config struct {
 	// EnableHismsg 是否启用hismsg通知
 	EnableHismsg bool `json:"enable_hismsg"`
 	
+	// DeviceID 设备标识，用于标识不同的设备来源
+	DeviceID string `json:"device_id"`
+	
 	// SleepDuration 检查间隔时间（秒）
 	SleepDuration int `json:"sleep_duration"`
 }
@@ -45,6 +48,7 @@ func DefaultConfig() *Config {
 		HismsgKey:     "",
 		HismsgAPIURL:  "https://hismsg.com/api/send",
 		EnableHismsg:  false,
+		DeviceID:      "sim-sms-forward",
 		SleepDuration: 3,
 	}
 }

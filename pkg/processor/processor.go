@@ -29,7 +29,7 @@ func NewSMSProcessorWithConfig(cfg *config.Config) *SMSProcessor {
 		Config:       cfg,
 		ModemManager: modem.NewManager(cfg.ModemID),
 		BarkClient:   notification.NewBarkClient(cfg.BarkKey, cfg.BarkAPIURL),
-		HismsgClient: notification.NewHismsgClient(cfg.HismsgKey, cfg.HismsgAPIURL),
+		HismsgClient: notification.NewHismsgClient(cfg.HismsgKey, cfg.HismsgAPIURL, cfg.DeviceID),
 	}
 }
 
@@ -48,6 +48,7 @@ func NewSMSProcessor(modemID, barkKey string) *SMSProcessor {
 		HismsgKey:     "",
 		HismsgAPIURL:  "https://hismsg.com/api/send",
 		EnableHismsg:  false,
+		DeviceID:      "sim-sms-forward",
 		SleepDuration: 3,
 	}
 	return NewSMSProcessorWithConfig(cfg)

@@ -13,20 +13,23 @@ import (
 
 // HismsgClient Hismsg 通知客户端
 type HismsgClient struct {
-	userKey string // Hismsg 服务的 API 密钥，用于身份验证
-	APIURL  string // Hismsg API 服务器地址
+	userKey  string // Hismsg 服务的 API 密钥，用于身份验证
+	APIURL   string // Hismsg API 服务器地址
+	DeviceID string // 设备标识，用于标识不同的设备来源
 }
 
 // NewHismsgClient 创建一个新的 Hismsg 通知客户端
 // 参数:
 //   - userKey: Hismsg API 的密钥字符串
 //   - apiURL: Hismsg API 服务器地址
+//   - deviceID: 设备标识，用于标识不同的设备来源
 //
 // 返回: 初始化好的 HismsgClient 指针
-func NewHismsgClient(userKey, apiURL string) *HismsgClient {
+func NewHismsgClient(userKey, apiURL, deviceID string) *HismsgClient {
 	return &HismsgClient{
-		userKey: userKey,
-		APIURL:  apiURL,
+		userKey:  userKey,
+		APIURL:   apiURL,
+		DeviceID: deviceID,
 	}
 }
 
@@ -44,6 +47,9 @@ func (bc *HismsgClient) SendSMS(sms *types.SMS) error {
 	HismsgReq := types.HismsgRequest{
 		Content: body,
 		Title:   title,
+		Source:  bc.DeviceID,
+		UserKey: bc.userKey,
+		Tags:    []string{"短信"},
 	}
 
 	// 将请求数据序列化为 JSON 格式
@@ -54,7 +60,7 @@ func (bc *HismsgClient) SendSMS(sms *types.SMS) error {
 	}
 
 	// 发送 HTTP POST 请求到 Hismsg API
-	url := fmt.Sprintf("%s/api/message/push/%s", bc.APIURL, bc.userKey)
+	url := fmt.Sprintf("%s/api/message/push/send", bc.APIURL)
 	logger.Infof("发送 Hismsg 请求到: %s", url)
 
 	resp, err := http.Post(url, "application/json; charset=utf-8", bytes.NewBuffer(jsonData))

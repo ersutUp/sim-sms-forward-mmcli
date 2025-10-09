@@ -6,5 +6,6 @@
   "hismsg_key": "",
   "hismsg_api_url": "https://hismsg.com/api/send",
   "enable_hismsg": false,
+  "device_id": "sim-sms-forward",
   "sleep_duration": 3
 }

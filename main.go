@@ -52,6 +52,7 @@ func main() {
 			HismsgKey:     "",
 			HismsgAPIURL:  "https://hismsg.com/api/send",
 			EnableHismsg:  false,
+			DeviceID:      "sim-sms-forward",
 			SleepDuration: 3,
 		}
 	default:
